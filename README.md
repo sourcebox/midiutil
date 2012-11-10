@@ -8,10 +8,10 @@ to monitor incoming data.
 
 ## Requirements
 
-- Python 2.7
+- Python 2.7 or Python 3.3 (other versions may work but were not tested)
 - [python-rtmidi](http://pypi.python.org/pypi/python-rtmidi/)
 
-midiutil was developed and tested under OS X.
+midiutil was developed and tested on Mac OS X.
 
 ## Quick Start
 
@@ -35,7 +35,8 @@ Example:
 
 	$ ./midiutil.py -d 2 -w 0x90 60 127
 
-In the example above, a Note On message on MIDI channel 1 with note number 60 and a velocity of 127 is sent to output device id 2.
+In the example above, a Note On message on MIDI channel 1 with note number 60
+and a velocity of 127 is sent to output device id 2.
 Numbers prefixed with 0x are interpreted as hex values.
 
 ### Monitoring MIDI data
@@ -62,7 +63,6 @@ This tool is released under the BSD license.
 
 ## Todo
 
-- Python 3 support
-- Testing on MS Windows platforms
+- Testing on Linux and MS Windows
 - Support for device names instead of numeric IDs
 - More options :-)

@@ -65,9 +65,9 @@ if __name__ == '__main__':
                 raise Exception('Device id out of range')
             outport.open_port(device_id)
             if args['hex']:
-                data = map(lambda x: int(x, 16), args['write'])
+                data = [int(x, 16) for x in args['write']]
             else:
-                data = map(lambda x: int(x, 0), args['write'])
+                data = [int(x, 0) for x in args['write']]
             outport.send_message(data)
             del outport
 

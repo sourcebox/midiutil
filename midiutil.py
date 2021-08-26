@@ -23,6 +23,10 @@ def midi_in_callback(value, args):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        # Show help when no arguments are given
+        sys.argv.append('-h')
+
     # Setup command line parser
     parser = argparse.ArgumentParser(description='MIDI utility')
     parser.add_argument('-l', '--list', action='store_true',

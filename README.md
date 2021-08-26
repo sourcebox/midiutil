@@ -8,18 +8,18 @@ to monitor incoming data.
 
 ## Requirements
 
-- Python 2.7 or Python 3.3 (other versions may work but were not tested)
+- Python 3.3 or later
 - [python-rtmidi](http://pypi.python.org/pypi/python-rtmidi/)
 
-midiutil was developed and tested on Mac OS X.
+midiutil was mainly developed and tested on Linux and macOS but should also work on Windows.
 
 ## Quick Start
 
-	$ ./midiutil.py -h
+    midiutil.py -h
 
 Shows available options.
 
-	$ ./midiutil.py -l
+    midiutil.py -l
 
 Lists available MIDI devices, seperated by inputs and outputs.
 Each device has an ID which has to be used to select the device
@@ -27,13 +27,13 @@ when transmitting data.
 
 ### Sending MIDI data
 
-	$ ./midiutil.py -d ID -w DATA [DATA ...]
+    midiutil.py -d ID -w DATA [DATA ...]
 
 Sends data to a device.
 
 Example:
 
-	$ ./midiutil.py -d 2 -w 0x90 60 127
+    midiutil.py -d 2 -w 0x90 60 127
 
 In the example above, a Note On message on MIDI channel 1 with note number 60
 and a velocity of 127 is sent to output device id 2.
@@ -41,19 +41,19 @@ Numbers prefixed with 0x are interpreted as hex values.
 
 ### Monitoring MIDI data
 
-	$ ./midiutil.py -d ID -r [-x]
+    midiutil.py -d ID -r [-x]
 
 Listens to data from a device and displays it.
 
 Example:
 
-	$ ./midiutil.py -d 2 -r
+    midiutil.py -d 2 -r
 
 Shows incoming messages from input device id 2.
 
 To display data as hex values, add the `-x` switch to the command:
 
-	$ ./midiutil.py -d 2 -x
+    midiutil.py -d 2 -x
 
 Use `Ctrl-C` to abort monitoring and return to the command prompt.
 
@@ -63,6 +63,5 @@ This tool is released under the BSD license.
 
 ## Todo
 
-- Testing on Linux and MS Windows
 - Support for device names instead of numeric IDs
 - More options :-)

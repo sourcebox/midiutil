@@ -16,7 +16,7 @@ def signal_handler(signal, frame):
 
 def midi_in_callback(value, args):
     data = value[0]
-    if args['hex']:
+    if args.hex:
         print('[' + ', '.join('0x%02X' % x for x in data) + ']')
     else:
         print(data)
@@ -24,7 +24,7 @@ def midi_in_callback(value, args):
 
 if __name__ == '__main__':
     # Setup command line parser
-    parser = argparse.ArgumentParser(description='MIDI tool')
+    parser = argparse.ArgumentParser(description='MIDI utility')
     parser.add_argument('-l', '--list', action='store_true',
                         help='List connected devices')
     parser.add_argument('-d', '--device', metavar='ID',
@@ -35,11 +35,10 @@ if __name__ == '__main__':
                         help='Read data')
     parser.add_argument('-x', '--hex', action='store_true',
                         help='Show/interprete data as hex')
-    args = vars(parser.parse_args())
+    args = parser.parse_args()
 
     try:
-
-        if args['list']:
+        if args.list:
             # List command, show all connected devices
             print()
             print('Available ports:')
@@ -55,28 +54,28 @@ if __name__ == '__main__':
                 print('\t', i, name, sep='\t')
             print()
 
-        elif args['write']:
+        elif args.write:
             # Write command, send data
-            if not args['device']:
+            if not args.device:
                 raise Exception('No device specified')
-            device_id = int(args['device'])
+            device_id = int(args.device)
             outport = rtmidi.MidiOut()
             if not device_id < len(outport.get_ports()):
                 raise Exception('Device id out of range')
             outport.open_port(device_id)
-            if args['hex']:
-                data = [int(x, 16) for x in args['write']]
+            if args.hex:
+                data = [int(x, 16) for x in args.write]
             else:
-                data = [int(x, 0) for x in args['write']]
+                data = [int(x, 0) for x in args.write]
             outport.send_message(data)
             del outport
 
-        elif args['read']:
+        elif args.read:
             # Read command, receive data until Ctrl-C is pressed
             signal.signal(signal.SIGINT, signal_handler)
-            if not args['device']:
+            if not args.device:
                 raise Exception('No device specified')
-            device_id = int(args['device'])
+            device_id = int(args.device)
             inport = rtmidi.MidiIn()
             if not device_id < len(inport.get_ports()):
                 raise Exception('Device id out of range')

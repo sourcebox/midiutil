@@ -42,6 +42,12 @@ In the example above, a Note On message on MIDI channel 1 with note number 60
 and a velocity of 127 is sent to output device id 2.
 Numbers prefixed with 0x are interpreted as hex values.
 
+### Sending Sysex files
+
+    midiutil.py -d ID -s FILE
+
+Reads the data from the file and transmits the packets to the device. A delay of 50ms is inserted between each packet to not overload the device.
+
 ### Monitoring MIDI data
 
     midiutil.py -d ID -r [-x]

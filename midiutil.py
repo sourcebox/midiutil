@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 import signal
 import sys
 import time
@@ -54,13 +55,15 @@ def main():
     parser.add_argument('-l', '--list', action='store_true',
                         help='List connected devices')
     parser.add_argument('-d', '--device', metavar='ID',
-                        help='Select device')
+                        help='Selected device')
     parser.add_argument('-w', '--write', type=str, nargs='+', metavar='DATA',
                         help='Write data')
     parser.add_argument('-r', '--read', action='store_true',
                         help='Read data')
     parser.add_argument('-x', '--hex', action='store_true',
                         help='Show/interprete data as hex')
+    parser.add_argument('-s', '--sysex-file', metavar='FILE',
+                        help='Sysex file to transmit')
     args = parser.parse_args()
 
     try:
@@ -83,7 +86,7 @@ def main():
         elif args.write:
             # Write command, send data
             if not args.device:
-                raise Exception('No device specified')
+                raise Exception('No device specified.')
             outport = get_port(rtmidi.MidiOut(), args.device)
             if args.hex:
                 data = [int(x, 16) for x in args.write]
@@ -96,12 +99,36 @@ def main():
             # Read command, receive data until Ctrl-C is pressed
             signal.signal(signal.SIGINT, signal_handler)
             if not args.device:
-                raise Exception('No device specified')
+                raise Exception('No device specified.')
             inport = get_port(rtmidi.MidiIn(), args.device)
             inport.set_callback(midi_in_callback, args)
             inport.ignore_types(False, False, False)
             while True:
                 time.sleep(1)
+
+        elif args.sysex_file:
+            # Send sysex file command
+            if not args.device:
+                raise Exception('No device specified.')
+            outport = get_port(rtmidi.MidiOut(), args.device)
+            file_path = args.sysex_file
+            if not (os.path.exists(file_path) and os.path.isfile(file_path)):
+                raise Exception('File "%s" does not exist.' % file_path)
+            with open(file_path, "rb") as f:
+                data = f.read()
+                data_pos = 0
+                while True:
+                    sysex_start_pos = data.find(b"\xF0", data_pos)
+                    sysex_end_pos = data.find(b"\xF7", data_pos)
+                    if sysex_start_pos >= 0 and sysex_end_pos >= 0:
+                        message = data[sysex_start_pos:sysex_end_pos + 1]
+                        print("Sending sysex message with %i bytes." %
+                              len(message))
+                        outport.send_message(message)
+                        time.sleep(0.05)
+                        data_pos = sysex_end_pos + 1
+                    else:
+                        break
 
     except Exception as e:
         print('Error:', e)

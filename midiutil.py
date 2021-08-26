@@ -14,6 +14,7 @@ def signal_handler(signal, frame):
 
 
 def midi_in_callback(value, args):
+    """Function called when MIDI data is received"""
     data = value[0]
     if args.hex:
         print('[' + ', '.join('0x%02X' % x for x in data) + ']')
@@ -21,7 +22,29 @@ def midi_in_callback(value, args):
         print(data)
 
 
-if __name__ == '__main__':
+def get_port(client, device_id):
+    """Return open port for a device"""
+    try:
+        # Try to parse device id as number first
+        dev_id = int(device_id)
+        if not dev_id < len(client.get_ports()):
+            raise Exception('Device id out of range')
+    except ValueError:
+        # If this fails, try to find a port name starting with it
+        for i, name in enumerate(client.get_ports()):
+            if name.lower().startswith(device_id.lower()):
+                return client.open_port(i)
+        # If this also fails, try to find a port name that contains
+        # a substring of it
+        for i, name in enumerate(client.get_ports()):
+            if device_id.lower() in name.lower():
+                return client.open_port(i)
+        raise Exception('Device "%s" not found' % device_id)
+
+    return client.open_port(dev_id)
+
+
+def main():
     if len(sys.argv) < 2:
         # Show help when no arguments are given
         sys.argv.append('-h')
@@ -61,11 +84,7 @@ if __name__ == '__main__':
             # Write command, send data
             if not args.device:
                 raise Exception('No device specified')
-            device_id = int(args.device)
-            outport = rtmidi.MidiOut()
-            if not device_id < len(outport.get_ports()):
-                raise Exception('Device id out of range')
-            outport.open_port(device_id)
+            outport = get_port(rtmidi.MidiOut(), args.device)
             if args.hex:
                 data = [int(x, 16) for x in args.write]
             else:
@@ -78,11 +97,7 @@ if __name__ == '__main__':
             signal.signal(signal.SIGINT, signal_handler)
             if not args.device:
                 raise Exception('No device specified')
-            device_id = int(args.device)
-            inport = rtmidi.MidiIn()
-            if not device_id < len(inport.get_ports()):
-                raise Exception('Device id out of range')
-            inport.open_port(device_id)
+            inport = get_port(rtmidi.MidiIn(), args.device)
             inport.set_callback(midi_in_callback, args)
             inport.ignore_types(False, False, False)
             while True:
@@ -90,3 +105,7 @@ if __name__ == '__main__':
 
     except Exception as e:
         print('Error:', e)
+
+
+if __name__ == '__main__':
+    main()

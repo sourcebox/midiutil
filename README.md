@@ -21,9 +21,11 @@ Shows available options.
 
     midiutil.py -l
 
-Lists available MIDI devices, seperated by inputs and outputs.
+Lists available MIDI devices, separated by inputs and outputs.
 Each device has an ID which has to be used to select the device
 when transmitting data.
+
+Instead of a numerical ID, you can use the case-insensitive device name or a part of it.
 
 ### Sending MIDI data
 
@@ -34,6 +36,7 @@ Sends data to a device.
 Example:
 
     midiutil.py -d 2 -w 0x90 60 127
+    midiutil.py -d mysynth -w 0x90 60 127
 
 In the example above, a Note On message on MIDI channel 1 with note number 60
 and a velocity of 127 is sent to output device id 2.
@@ -48,6 +51,7 @@ Listens to data from a device and displays it.
 Example:
 
     midiutil.py -d 2 -r
+    midiutil.py -d mysynth -r
 
 Shows incoming messages from input device id 2.
 
@@ -60,8 +64,3 @@ Use `Ctrl-C` to abort monitoring and return to the command prompt.
 ## License
 
 This tool is released under the BSD license.
-
-## Todo
-
-- Support for device names instead of numeric IDs
-- More options :-)
